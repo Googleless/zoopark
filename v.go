@@ -1,6 +1,16 @@
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"bytes"
+	"fmt"
+	"os"
+	"strings"
+	"time"
+
+	"github.com/ebitengine/oto/v3"
+	"github.com/hajimehoshi/go-mp3"
+)
 
 type Animal interface {
 	move()
@@ -8,6 +18,7 @@ type Animal interface {
 	fly()
 	swim()
 	climb()
+	soundFile() string
 }
 
 type Bear struct{}
@@ -37,6 +48,66 @@ func swim(animal Animal) {
 
 func climb(animal Animal) {
 	animal.climb()
+}
+
+// Добавьте метод для получения имени файла
+func (b Bear) soundFile() string {
+	return "Bear.mp3"
+}
+
+func (f Feline) soundFile() string {
+	return "Feline.mp3"
+}
+
+func (c Canine) soundFile() string {
+	return "Canine.mp3"
+}
+
+func (b Bird) soundFile() string {
+	return "Bird.mp3"
+}
+
+func (r Rodent) soundFile() string {
+	return "Rodent.mp3"
+}
+
+// Измените метод sound
+func sound(animal Animal) {
+	animal.soundFile()
+	fileName := animal.soundFile()
+
+	fileBytes, err := os.ReadFile(fileName)
+	if err != nil {
+		panic("Ошибка чтения файла: " + err.Error())
+	}
+
+	fileBytesReader := bytes.NewReader(fileBytes)
+	decodedMp3, err := mp3.NewDecoder(fileBytesReader)
+	if err != nil {
+		panic("Ошибка mp3 декодера: " + err.Error())
+	}
+
+	op := &oto.NewContextOptions{}
+	op.SampleRate = 44100
+	op.ChannelCount = 2
+	op.Format = oto.FormatSignedInt16LE
+
+	otoCtx, readyChan, err := oto.NewContext(op)
+	if err != nil {
+		panic("Контекст oto.NewContext выдал ошибку: " + err.Error())
+	}
+	<-readyChan
+	player := otoCtx.NewPlayer(decodedMp3)
+
+	player.Play()
+
+	for player.IsPlaying() {
+		time.Sleep(time.Millisecond)
+	}
+	err = player.Close()
+	if err != nil {
+		panic("Закрытие проигрывателя прошло безуспешно: " + err.Error())
+	}
 }
 
 // Медведи
@@ -143,6 +214,8 @@ func (sr Rodent) swim() {
 func (cr Rodent) climb() {
 	fmt.Println("Некоторым видам грызунов не обязательно карабкаться. Однако роду белок необходимо карабкаться, и делают они так с легкостью.")
 }
+
+// Основная функция
 func main() {
 	grizzly := Bear{}
 	lynx := Feline{}
@@ -150,29 +223,60 @@ func main() {
 	parrot := Bird{}
 	squirrel := Rodent{}
 
-	move(grizzly)
-	eat(grizzly)
-	fly(grizzly)
-	climb(grizzly)
-	swim(grizzly)
-	move(lynx)
-	eat(lynx)
-	fly(lynx)
-	climb(lynx)
-	swim(lynx)
-	move(wolf)
-	eat(wolf)
-	fly(wolf)
-	climb(wolf)
-	swim(wolf)
-	move(parrot)
-	eat(parrot)
-	fly(parrot)
-	climb(parrot)
-	swim(parrot)
-	move(squirrel)
-	eat(squirrel)
-	fly(squirrel)
-	climb(squirrel)
-	swim(squirrel)
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("О каких животных Вы хотите узнать?", "\n")
+	fmt.Println("Медведи.")
+	fmt.Println("Кошачьи.")
+	fmt.Println("Собачьи.")
+	fmt.Println("Птицы.")
+	fmt.Println("Грызуны.")
+
+	input, _ := reader.ReadString('\n')
+	input = strings.TrimSpace(input)
+	fmt.Println("Вы ввели: ", input)
+
+	switch input {
+	case "Медведи":
+		move(grizzly)
+		eat(grizzly)
+		fly(grizzly)
+		climb(grizzly)
+		swim(grizzly)
+		sound(grizzly)
+
+	case "Кошачьи":
+		move(lynx)
+		eat(lynx)
+		fly(lynx)
+		climb(lynx)
+		swim(lynx)
+		sound(lynx)
+
+	case "Собачьи":
+		move(wolf)
+		eat(wolf)
+		fly(wolf)
+		climb(wolf)
+		swim(wolf)
+		sound(wolf)
+
+	case "Птицы":
+		move(parrot)
+		eat(parrot)
+		fly(parrot)
+		climb(parrot)
+		swim(parrot)
+		sound(parrot)
+
+	case "Грызуны":
+		move(squirrel)
+		eat(squirrel)
+		fly(squirrel)
+		climb(squirrel)
+		swim(squirrel)
+		sound(squirrel)
+
+	default:
+		fmt.Println("Неизвестный ввод.")
+	}
 }
