@@ -50,28 +50,31 @@ func climb(animal Animal) {
 	animal.climb()
 }
 
-// Добавьте метод для получения имени файла
 func (b Bear) soundFile() string {
+	fmt.Println("Медведи рычат.")
 	return "Bear.mp3"
 }
 
 func (f Feline) soundFile() string {
+	fmt.Println("Кошачьи мяукают и завывают.")
 	return "Feline.mp3"
 }
 
 func (c Canine) soundFile() string {
+	fmt.Println("Собачьи гавкают и воют.")
 	return "Canine.mp3"
 }
 
 func (b Bird) soundFile() string {
+	fmt.Println("Птицы чирикают.")
 	return "Bird.mp3"
 }
 
 func (r Rodent) soundFile() string {
+	fmt.Println("Грызуны скрипят.")
 	return "Rodent.mp3"
 }
 
-// Измените метод sound
 func sound(animal Animal) {
 	animal.soundFile()
 	fileName := animal.soundFile()
