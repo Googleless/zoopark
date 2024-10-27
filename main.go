@@ -3,14 +3,29 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
+	_ "github.com/lib/pq"
 	"hello-go/zoopark/animal"
+	"hello-go/zoopark/database"
 	"hello-go/zoopark/sound"
 )
 
 func main() {
+	connStr := "user=postgres password=123456789 dbname=postgres sslmode=disable"
+	database, err := db.InitializeDatabase(connStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func(database *db.DB) {
+		err := database.Close()
+		if err != nil {
+
+		}
+	}(database)
+
 	grizzly := animal.Bear{}
 	lynx := animal.Feline{}
 	wolf := animal.Canine{}
@@ -38,7 +53,10 @@ func main() {
 		grizzly.Fly()
 		grizzly.Climb()
 		grizzly.Swim()
-		sound.PlaySound(grizzly)
+		err := sound.PlaySound(grizzly)
+		if err != nil {
+			return
+		}
 
 	case "Кошачьи":
 		lynx.Move()
@@ -46,7 +64,10 @@ func main() {
 		lynx.Fly()
 		lynx.Climb()
 		lynx.Swim()
-		sound.PlaySound(lynx)
+		err := sound.PlaySound(lynx)
+		if err != nil {
+			return
+		}
 
 	case "Собачьи":
 		wolf.Move()
@@ -54,7 +75,10 @@ func main() {
 		wolf.Fly()
 		wolf.Climb()
 		wolf.Swim()
-		sound.PlaySound(wolf)
+		err := sound.PlaySound(wolf)
+		if err != nil {
+			return
+		}
 
 	case "Птицы":
 		parrot.Move()
@@ -62,7 +86,10 @@ func main() {
 		parrot.Fly()
 		parrot.Climb()
 		parrot.Swim()
-		sound.PlaySound(parrot)
+		err := sound.PlaySound(parrot)
+		if err != nil {
+			return
+		}
 
 	case "Грызуны":
 		squirrel.Move()
@@ -70,7 +97,10 @@ func main() {
 		squirrel.Fly()
 		squirrel.Climb()
 		squirrel.Swim()
-		sound.PlaySound(squirrel)
+		err := sound.PlaySound(squirrel)
+		if err != nil {
+			return
+		}
 
 	default:
 		fmt.Println("Неизвестный ввод.")
