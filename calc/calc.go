@@ -23,6 +23,12 @@ func divide(a, b float64) float64 {
 	}
 	return a / b
 }
+func factorial(a float64) float64 {
+	if a == 0 {
+		return 1
+	}
+	return a * factorial(a-1)
+}
 
 func getInput() (float64, float64, string) {
 	var a, b float64
@@ -34,7 +40,7 @@ func getInput() (float64, float64, string) {
 	fmt.Print("Введите второе число: ")
 	fmt.Scanln(&b)
 
-	fmt.Print("Введите оператор (+, -, *, /): ")
+	fmt.Print("Введите оператор (+, -, *, /, fackyou): ")
 	fmt.Scanln(&operator)
 
 	return a, b, operator
@@ -54,6 +60,8 @@ func main() {
 		result = multiply(a, b)
 	case "/":
 		result = divide(a, b)
+	case "fackyou":
+		result = divide(factorial(a), factorial(b))
 	default:
 		fmt.Println("Неизвестный оператор")
 		return
