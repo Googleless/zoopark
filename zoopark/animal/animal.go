@@ -7,4 +7,5 @@ type Animal interface {
 	Swim()
 	Climb()
 	SoundFile() string
+	DisplayInfo()
 }

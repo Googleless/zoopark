@@ -15,6 +15,11 @@ import (
 func PlaySound(animal animal.Animal) error {
 	fileName := animal.SoundFile()
 
+	// Проверка существования файла
+	if _, err := os.Stat(fileName); os.IsNotExist(err) {
+		return fmt.Errorf("файл %s не найден", fileName)
+	}
+
 	fileBytes, err := os.ReadFile(fileName)
 	if err != nil {
 		return fmt.Errorf("ошибка чтения файла: %w", err)

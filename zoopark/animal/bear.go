@@ -25,5 +25,14 @@ func (b Bear) Climb() {
 }
 
 func (b Bear) SoundFile() string {
-	return "Bear.mp3"
+	return "sound/Bear.mp3"
+}
+
+func (b Bear) DisplayInfo() {
+	fmt.Println("Информация о медведях:")
+	b.Move()
+	b.Eat()
+	b.Fly()
+	b.Swim()
+	b.Climb()
 }

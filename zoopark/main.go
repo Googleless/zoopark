@@ -6,103 +6,72 @@ import (
 	"log"
 	"os"
 	"strings"
+	"sync"
 
-	_ "github.com/lib/pq"
+	"github.com/gen2brain/beeep"
 	"hello-go/zoopark/animal"
 	"hello-go/zoopark/database"
 	"hello-go/zoopark/sound"
 )
 
 func main() {
+	// Инициализация базы данных
 	connStr := "user=postgres password=123456789 dbname=postgres sslmode=disable"
-	database, err := db.InitializeDatabase(connStr)
+	db, err := database.InitializeDatabase(connStr)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer func(database *db.DB) {
-		err := database.Close()
-		if err != nil {
+	defer db.Close()
 
-		}
-	}(database)
-
-	grizzly := animal.Bear{}
-	lynx := animal.Feline{}
-	wolf := animal.Canine{}
-	parrot := animal.Bird{}
-	squirrel := animal.Rodent{}
+	// Животные
+	animals := map[string]animal.Animal{
+		"Медведи": animal.Bear{},
+		"Кошачьи": animal.Feline{},
+		"Собачьи": animal.Canine{},
+		"Птицы":   animal.Bird{},
+		"Грызуны": animal.Rodent{},
+	}
 
 	reader := bufio.NewReader(os.Stdin)
-
 	fmt.Print("О каких животных Вы хотите узнать?\n")
-	fmt.Println("Медведи.")
-	fmt.Println("Кошачьи.")
-	fmt.Println("Собачьи.")
-	fmt.Println("Птицы.")
-	fmt.Println("Грызуны.")
+	for animal := range animals {
+		fmt.Println(animal)
+	}
 
 	input, _ := reader.ReadString('\n')
 	input = strings.TrimSpace(input)
+	fmt.Println("Вы ввели:", input)
 
-	fmt.Println("Вы ввели: ", input)
-
-	switch input {
-	case "Медведи":
-		grizzly.Move()
-		grizzly.Eat()
-		grizzly.Fly()
-		grizzly.Climb()
-		grizzly.Swim()
-		err := sound.PlaySound(grizzly)
-		if err != nil {
-			return
-		}
-
-	case "Кошачьи":
-		lynx.Move()
-		lynx.Eat()
-		lynx.Fly()
-		lynx.Climb()
-		lynx.Swim()
-		err := sound.PlaySound(lynx)
-		if err != nil {
-			return
-		}
-
-	case "Собачьи":
-		wolf.Move()
-		wolf.Eat()
-		wolf.Fly()
-		wolf.Climb()
-		wolf.Swim()
-		err := sound.PlaySound(wolf)
-		if err != nil {
-			return
-		}
-
-	case "Птицы":
-		parrot.Move()
-		parrot.Eat()
-		parrot.Fly()
-		parrot.Climb()
-		parrot.Swim()
-		err := sound.PlaySound(parrot)
-		if err != nil {
-			return
-		}
-
-	case "Грызуны":
-		squirrel.Move()
-		squirrel.Eat()
-		squirrel.Fly()
-		squirrel.Climb()
-		squirrel.Swim()
-		err := sound.PlaySound(squirrel)
-		if err != nil {
-			return
-		}
-
-	default:
+	selectedAnimal, exists := animals[input]
+	if !exists {
 		fmt.Println("Неизвестный ввод.")
+		return
 	}
+
+	// Запуск горутины для обработки животного
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func(a animal.Animal) {
+		defer wg.Done()
+		a.DisplayInfo()
+		err := sound.PlaySound(a)
+		if err != nil {
+			fmt.Printf("Ошибка воспроизведения звука для %T: %v\n", a, err)
+		}
+		notifyAnimalProcessed(a)
+	}(selectedAnimal)
+
+	// Ожидание завершения всех горутин
+	wg.Wait()
+	fmt.Println("Обработка завершена.")
+}
+
+// Уведомление о завершении обработки животного
+func notifyAnimalProcessed(a animal.Animal) {
+	go func() {
+		err := beeep.Notify(fmt.Sprintf("Обработан: %T", a), "Информация и звук успешно обработаны.", "")
+		if err != nil {
+			fmt.Printf("Ошибка отправки уведомления: %v\n", err)
+		}
+	}()
 }

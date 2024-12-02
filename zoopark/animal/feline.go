@@ -21,9 +21,18 @@ func (f Feline) Swim() {
 }
 
 func (f Feline) Climb() {
-	fmt.Println("Большинство кошачьих умеют очень хорошо охотиться.")
+	fmt.Println("Большинство кошачьих умеют очень хорошо карабкаться.")
 }
 
 func (f Feline) SoundFile() string {
-	return "Feline.mp3"
+	return "sound/Feline.mp3"
+}
+
+func (f Feline) DisplayInfo() {
+	fmt.Println("Информация о кошачьих")
+	f.Move()
+	f.Eat()
+	f.Fly()
+	f.Swim()
+	f.Climb()
 }

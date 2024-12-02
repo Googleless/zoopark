@@ -25,5 +25,14 @@ func (r Rodent) Climb() {
 }
 
 func (r Rodent) SoundFile() string {
-	return "Rodent.mp3"
+	return "sound/Rodent.mp3"
+}
+
+func (r Rodent) DisplayInfo() {
+	fmt.Println("Информация о грызунах:")
+	r.Move()
+	r.Eat()
+	r.Fly()
+	r.Swim()
+	r.Climb()
 }

@@ -25,5 +25,14 @@ func (b Bird) Climb() {
 }
 
 func (b Bird) SoundFile() string {
-	return "Bird.mp3"
+	return "sound/Bird.mp3"
+}
+
+func (b Bird) DisplayInfo() {
+	fmt.Println("Информация о птицах:")
+	b.Move()
+	b.Eat()
+	b.Fly()
+	b.Swim()
+	b.Climb()
 }

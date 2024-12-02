@@ -25,5 +25,14 @@ func (c Canine) Climb() {
 }
 
 func (c Canine) SoundFile() string {
-	return "Canine.mp3"
+	return "sound/Canine.mp3"
+}
+
+func (c Canine) DisplayInfo() {
+	fmt.Println("Информация о собачьих:")
+	c.Move()
+	c.Eat()
+	c.Fly()
+	c.Swim()
+	c.Climb()
 }
